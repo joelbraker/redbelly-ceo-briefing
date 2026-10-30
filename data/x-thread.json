@@ -1,0 +1,60 @@
+{
+  "posts": [
+    {
+      "text": "Redbelly Network has named Christian Westerlind Wigstrom as its new CEO. He starts in November 2026.\n\nWho is he, and what could his track record mean for Tokeniser? A short, sourced thread.\n\nhttps://redbelly.network/blog/redbelly-new-CEO-is-a-payments-pioneer-betting-on-regulated-tokenisation",
+      "sources": [
+        "redbelly-announcement"
+      ],
+      "image": {
+        "file": "02-x-thread-card.png",
+        "preview": "../deliverables/02-x-thread-card.png",
+        "alt": "Redbelly DAO community briefing card. New CEO: Christian Westerlind Wigstrom. Role: Chief Executive Officer. Starts November 2026. Previously co-founder and CEO of Monoova."
+      }
+    },
+    {
+      "text": "2/8 Background\n\nHe co-founded Australian payments company Monoova and led it for about 9.5 years, growing what began as Moneytech Payments. He handed over the CEO role on 1 July 2026.\n\nhttps://www.monoova.com/newsroom/monoova-appoints-bianca-bates-as-ceo",
+      "sources": [
+        "monoova-ceo-transition"
+      ]
+    },
+    {
+      "text": "3/8 Monoova's record, as reported by the company:\n\n– close to $200bn in payments processed since he joined\n– transacts with more than 10% of all Australians\n– FinTech Organisation of the Year at the 2022 Finnies\n\nhttps://www.monoova.com/newsroom/monoova-appoints-bianca-bates-as-ceo\nhttps://www.fintechaustralia.org.au/community-news/fintech-australia-announces-2022-finnies-award-winners",
+      "sources": [
+        "monoova-ceo-transition",
+        "finnies-2022"
+      ]
+    },
+    {
+      "text": "4/8 Monoova was a major player in PayTo, which lets a business take payments straight from a customer's bank account once the customer approves an agreement in their online banking.\n\nIn March 2024 it called itself Australia's largest PayTo facilitator.\n\nhttps://www.aap.com.au/aapreleases/cision20240311ae57503/",
+      "sources": [
+        "ap-payto",
+        "monoova-payto-2024"
+      ]
+    },
+    {
+      "text": "5/8 Industry roles: elected to the FinTech Australia board in 2022, later its Treasurer. In 2025 he became an alternate director of AusPayNet, the payments industry's self-regulatory body.\n\nhttps://www.fintechaustralia.org.au/community-news/fintech-australia-announces-new-board-appointments-2023\nhttps://www.monoova.com/newsroom/christian-westerlind-wigstrom-appointed-as-alternate-director-at-australian-payments-network",
+      "sources": [
+        "fintechaus-board-2022",
+        "fintechaus-board-2023",
+        "auspaynet-2025"
+      ]
+    },
+    {
+      "text": "6/8 What Redbelly said: he joins to lead its push into regulated tokenisation.\n\nIn his words: “In payments, I learnt that success belonged to the company that saw compliance as a product edge rather than a tick box.”\n\nhttps://redbelly.network/blog/redbelly-new-CEO-is-a-payments-pioneer-betting-on-regulated-tokenisation",
+      "sources": [
+        "redbelly-announcement"
+      ]
+    },
+    {
+      "text": "7/8 Why now: Australia's Digital Assets Framework Act commences in April 2027. And the RBA's Project Acacia report names Redbelly as one of three platforms used to test a pilot wholesale central bank digital currency.\n\nhttps://www.legislation.gov.au/C2026A00038/asmade/text\nhttps://www.rba.gov.au/payments-and-infrastructure/tokenised-money/pdf/project-acacia-final-report.pdf",
+      "sources": [
+        "daf-act",
+        "rba-acacia-report"
+      ]
+    },
+    {
+      "text": "8/8 Our read (analysis, not fact): Tokeniser may be run like payments infrastructure, sold via partners with compliance built in.\n\nOpen question: how payments experience carries over to capital markets.\n\nFull briefing with sources: {BRIEFING_LINK}\n\nNot financial advice.",
+      "sources": []
+    }
+  ]
+}
