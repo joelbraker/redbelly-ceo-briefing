@@ -113,12 +113,14 @@ The deliverables follow the public [Redbelly brand guidelines](https://redbelly.
 │   └── assets/              Official logos and Readex Pro (SIL Open Font License)
 ├── scripts/
 │   ├── build.mjs            Renders every deliverable with headless Chromium
+│   ├── site.mjs             Assembles the hosted web page from the committed deliverables (no browser needed)
 │   ├── verify.mjs           Live source, quote, thread and guardrail checks
 │   └── lib.mjs              Shared helpers
 ├── verification/
 │   └── verification-report.md
-└── docs/
-    └── briefing-preview.png
+├── docs/
+│   └── briefing-preview.png
+└── vercel.json              Hosting config: runs build:site and serves public/
 ```
 
 ## Rebuilding
@@ -143,15 +145,31 @@ npm run verify
 
 `npm run check` runs the build and then the verification. `npm run verify:offline` runs only the checks that need no network.
 
+| Script | What it does | Needs Chromium |
+|--------|--------------|----------------|
+| `npm run build` | Renders all PDFs, the thread card and the README preview into `deliverables/` and `docs/` | Yes |
+| `npm run build:site` | Assembles the web page in `public/` from the committed deliverables | No |
+| `npm run verify` | Runs every check and writes the verification report | No (needs `curl` and `pdftotext`) |
+
 ### Editing content
 
 1. Edit the text in `source/briefing.html`. Cite with `[[source-key]]` or `[[key-one,key-two]]`. Numbers are assigned automatically in order of first use.
 2. To add a source, add an entry to `data/sources.json` with its URL and at least one `{ claim, excerpt }` pair, where the excerpt is copied exactly from the page.
 3. Run `npm run check`. The build stops if a page overflows, and verification fails if a passage or quote cannot be found on the live source.
 
+## Hosting on Vercel
+
+The repository deploys to Vercel as a static site with no extra settings. [`vercel.json`](vercel.json) tells Vercel to:
+
+- skip development dependencies (`npm install --omit=dev`), so Playwright is not installed;
+- run `npm run build:site`, which publishes the committed files in `deliverables/` with a branded index page;
+- serve the result from `public/`.
+
+The index page links the briefing PDF, shows the eight thread posts with copy buttons and character counts, summarises the verification results, and lists the sources in briefing order. Vercel's build machines have no Chromium, so the PDFs are never re-rendered there. After editing content, run `npm run build` locally and commit the updated `deliverables/` before deploying.
+
 ## Posting the thread
 
-1. Publish `deliverables/01-ceo-briefing.pdf` wherever the DAO hosts documents.
+1. Publish `deliverables/01-ceo-briefing.pdf` wherever the DAO hosts documents, or use the Vercel deployment at `/deliverables/01-ceo-briefing.pdf`.
 2. Open `deliverables/02-x-thread.md` and replace `{BRIEFING_LINK}` in post 8 with that address.
 3. Attach `deliverables/02-x-thread-card.png` to post 1, using the alt text given in the file.
 4. Post the eight posts in order as a single thread.

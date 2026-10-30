@@ -11,7 +11,7 @@
 //   6. Guardrails  no personal credit, handles, price talk or private-life terms
 //                  in any deliverable.
 //
-// Writes verification/verification-report.md and exits non-zero on any failure.
+// Writes verification/verification-report.md (full runs only) and exits non-zero on any failure.
 // Usage: node scripts/verify.mjs [--offline]   (--offline skips checks 2-4)
 import { readFileSync, writeFileSync, readdirSync, mkdirSync } from 'node:fs';
 import { execFileSync } from 'node:child_process';
@@ -137,11 +137,14 @@ if (linkRows.length) {
   lines.push('');
 }
 lines.push('## Thread character counts', '', '| Post | Characters (X weighting) |', '|---|---|', ...lengths.map((n, i) => `| ${i + 1} | ${n} / 280 |`), '');
-mkdirSync(VERIFICATION_DIR, { recursive: true });
-writeFileSync(path.join(VERIFICATION_DIR, 'verification-report.md'), lines.join('\n'));
+// Offline runs skip the live checks, so they never overwrite the full report.
+if (!offline) {
+  mkdirSync(VERIFICATION_DIR, { recursive: true });
+  writeFileSync(path.join(VERIFICATION_DIR, 'verification-report.md'), lines.join('\n'));
+}
 
 const failed = results.filter((r) => !r.ok);
 console.log('');
 for (const r of results) console.log(`${r.ok ? 'PASS' : 'FAIL'}  ${r.check}: ${r.detail}`);
-console.log(`\nReport written to ${path.relative(ROOT, path.join(VERIFICATION_DIR, 'verification-report.md'))}`);
+console.log(offline ? '\nOffline run: report not written.' : `\nReport written to ${path.relative(ROOT, path.join(VERIFICATION_DIR, 'verification-report.md'))}`);
 process.exit(failed.length ? 1 : 0);

@@ -5,6 +5,7 @@
   "description": "Sourced community briefing for the Redbelly DAO on Redbelly Network's incoming CEO, Christian Westerlind Wigstrom, and what his track record could mean for Tokeniser.",
   "scripts": {
     "build": "node scripts/build.mjs",
+    "build:site": "node scripts/site.mjs",
     "verify": "node scripts/verify.mjs",
     "verify:offline": "node scripts/verify.mjs --offline",
     "check": "npm run build && npm run verify"

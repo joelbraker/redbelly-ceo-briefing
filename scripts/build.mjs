@@ -289,7 +289,18 @@ async function render(browser, htmlPath, opts) {
 const FOOTER = `<div style="width:100%;font-family:Helvetica,Arial,sans-serif;font-size:6.4pt;color:#848B91;padding:0 15mm;display:flex;justify-content:space-between;">
   <span>Redbelly DAO · New CEO Briefing</span><span><span style="color:#FF5050" class="pageNumber"></span> / <span class="totalPages"></span></span></div>`;
 
-const browser = await chromium.launch();
+let browser;
+try {
+  browser = await chromium.launch();
+} catch (e) {
+  console.error([
+    'Could not start headless Chromium, which is needed to render the PDFs.',
+    'Install it with:  npx playwright install chromium',
+    'Hosting only (e.g. Vercel): the PDFs are already committed in deliverables/,',
+    'so use "npm run build:site" instead, which needs no browser (see vercel.json).',
+  ].join('\n'));
+  throw e;
+}
 try {
   console.log('Briefing');
   const totalPages = (briefingTemplate.match(/<section class="page">/g) ?? []).length;
