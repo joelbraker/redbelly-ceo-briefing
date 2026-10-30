@@ -279,6 +279,9 @@ async function render(browser, htmlPath, opts) {
   if (opts.png) {
     await page.screenshot({ path: opts.png, clip: { x: 0, y: 0, width: opts.viewport.width, height: opts.viewport.height } });
   }
+  if (opts.jpeg) {
+    await page.screenshot({ path: opts.jpeg, type: 'jpeg', quality: 82, clip: { x: 0, y: 0, width: opts.viewport.width, height: opts.viewport.height } });
+  }
   if (opts.pageShots) {
     const pages = await page.$$('.page');
     for (let i = 0; i < pages.length; i++) await pages[i].screenshot({ path: opts.pageShots(i + 1) });
@@ -324,6 +327,11 @@ try {
     viewport: { width: totalPages * 420 + 40, height: 634 },
     png: path.join(shotDir, 'briefing-preview.png'),
     scale: 2,
+    skipFontCheck: true,
+  });
+  await render(browser, path.join(SOURCE_DIR, '.build-strip.html'), {
+    viewport: { width: totalPages * 420 + 40, height: 634 },
+    jpeg: path.join(shotDir, 'briefing-preview.jpg'),
     skipFontCheck: true,
   });
 

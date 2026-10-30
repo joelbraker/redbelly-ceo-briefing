@@ -119,7 +119,7 @@ The deliverables follow the public [Redbelly brand guidelines](https://redbelly.
 ├── verification/
 │   └── verification-report.md
 ├── docs/
-│   └── briefing-preview.png
+│   └── briefing-preview.png / .jpg   Page previews (README and web page)
 └── vercel.json              Hosting config: runs build:site and serves public/
 ```
 
@@ -165,7 +165,12 @@ The repository deploys to Vercel as a static site with no extra settings. [`verc
 - run `npm run build:site`, which publishes the committed files in `deliverables/` with a branded index page;
 - serve the result from `public/`.
 
-The index page links the briefing PDF, shows the eight thread posts with copy buttons and character counts, summarises the verification results, and lists the sources in briefing order. Vercel's build machines have no Chromium, so the PDFs are never re-rendered there. After editing content, run `npm run build` locally and commit the updated `deliverables/` before deploying.
+The index page links the briefing PDF, shows the eight thread posts with copy buttons and character counts, summarises the verification results, and lists the sources in briefing order. It also includes:
+
+- social preview tags with absolute URLs, so the header card shows when the page is shared;
+- a branded 404 page and a `robots.txt` file;
+- `nosniff`, referrer and permissions headers, plus long-term caching for fonts and logos;
+- text contrast that meets WCAG AA, a skip link and visible keyboard focus. Vercel's build machines have no Chromium, so the PDFs are never re-rendered there. After editing content, run `npm run build` locally and commit the updated `deliverables/` before deploying.
 
 ## Posting the thread
 

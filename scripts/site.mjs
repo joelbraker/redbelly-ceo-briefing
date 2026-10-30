@@ -28,6 +28,11 @@ const report = readFileSync(path.join(VERIFICATION_DIR, 'verification-report.md'
 const checks = [...report.matchAll(/^\| ([^|]+) \| (Pass|\*\*Fail\*\*) \| ([^|]+) \|$/gm)].map((m) => ({ check: m[1], ok: m[2] === 'Pass', detail: m[3] }));
 const checkedOn = (report.match(/on (\d{1,2} \w+ \d{4})/) ?? [])[1] ?? sources.accessed;
 
+// Absolute URLs for link previews: SITE_URL if set, else Vercel's production domain.
+const SITE = (process.env.SITE_URL || (process.env.VERCEL_PROJECT_PRODUCTION_URL ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}` : '')).replace(/\/$/, '');
+const abs = (p) => (SITE ? `${SITE}/${p}` : p);
+const PREVIEW = existsSync(path.join(ROOT, 'docs', 'briefing-preview.jpg')) ? 'briefing-preview.jpg' : 'briefing-preview.png';
+
 const cite = (key) => `<sup class="cite"><a href="${escapeAttr(sources.byKey.get(key).url)}" title="${escapeAttr(sources.byKey.get(key).publisher)}">${numbering.get(key)}</a></sup>`;
 const linkify = (text) => escapeHtml(text).replace(/https?:\/\/[^\s<]+/g, (u) => `<a href="${escapeAttr(u)}">${u}</a>`);
 const postLength = (text) => xLength(text.replaceAll('{BRIEFING_LINK}', 'https://example.org/x'));
@@ -38,7 +43,7 @@ const posts = thread.posts.map((p, i) => `
           <span><b>Redbelly DAO</b><small>Post ${i + 1} of ${thread.posts.length} · ${postLength(p.text)} / 280</small></span>
           <button type="button" class="copy" data-i="${i}">Copy</button></header>
         <p>${linkify(p.text)}</p>
-        ${p.image ? `<img class="card" src="deliverables/${escapeAttr(p.image.file)}" alt="${escapeAttr(p.image.alt)}">` : ''}
+        ${p.image ? `<img class="card" src="deliverables/${escapeAttr(p.image.file)}" alt="${escapeAttr(p.image.alt)}" width="1600" height="900" loading="lazy" decoding="async">` : ''}
       </article>`).join('');
 
 const refs = ordered.map((s) => `
@@ -55,20 +60,32 @@ const html = `<!doctype html>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>New CEO Briefing</title>
 <meta name="description" content="A sourced community briefing for the Redbelly DAO on Redbelly Network's incoming CEO, Christian Westerlind Wigstrom, and what his track record could mean for Tokeniser.">
+${SITE ? `<link rel="canonical" href="${SITE}/">\n<meta property="og:url" content="${SITE}/">` : ''}
+<meta property="og:type" content="website">
 <meta property="og:title" content="New CEO Briefing: Christian Westerlind Wigstrom">
 <meta property="og:description" content="Who Redbelly Network's incoming CEO is, what Redbelly said, and what his track record could mean for Tokeniser. Every fact sourced.">
-<meta property="og:image" content="deliverables/02-x-thread-card.png">
+<meta property="og:image" content="${abs('deliverables/02-x-thread-card.png')}">
+<meta property="og:image:width" content="1600">
+<meta property="og:image:height" content="900">
+<meta property="og:image:alt" content="Redbelly DAO community briefing card: New CEO Christian Westerlind Wigstrom">
 <meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="New CEO Briefing: Christian Westerlind Wigstrom">
+<meta name="twitter:description" content="Who Redbelly Network's incoming CEO is, what Redbelly said, and what his track record could mean for Tokeniser. Every fact sourced.">
+<meta name="twitter:image" content="${abs('deliverables/02-x-thread-card.png')}">
+<meta name="theme-color" content="#142530">
 <link rel="icon" href="assets/logos/redbelly-isotype-red.svg" type="image/svg+xml">
 <style>
 @font-face { font-family: "Readex Pro"; font-weight: 300; src: url("assets/fonts/readex-pro-latin-300-normal.woff2") format("woff2"); font-display: swap; }
 @font-face { font-family: "Readex Pro"; font-weight: 400; src: url("assets/fonts/readex-pro-latin-400-normal.woff2") format("woff2"); font-display: swap; }
 @font-face { font-family: "Readex Pro"; font-weight: 500; src: url("assets/fonts/readex-pro-latin-500-normal.woff2") format("woff2"); font-display: swap; }
-:root { --red:#FF5050; --red-deep:#FA423C; --grey:#283A46; --navy:#142530; --slate:#848B91; --silver:#D9D9D9; --mist:#ECEBEC; --tint:#F6F6F7; --paper:#FFFFFF; --ink:#283A46; --muted:#5b6872; }
+:root { --red:#FF5050; --red-deep:#FA423C; --red-text:#CC2E2E; --red-button:#D63031; --red-on-dark:#FF7A7A; --slate-text:#656D74; --grey:#283A46; --navy:#142530; --slate:#848B91; --silver:#D9D9D9; --mist:#ECEBEC; --tint:#F6F6F7; --paper:#FFFFFF; --ink:#283A46; --muted:#5b6872; }
 * { box-sizing: border-box; }
 html { -webkit-text-size-adjust: 100%; }
 body { margin: 0; background: var(--paper); color: var(--ink); font: 400 16px/1.6 "Readex Pro", system-ui, sans-serif; }
-a { color: var(--red-deep); text-decoration: none; }
+a { color: var(--red-text); text-decoration: none; }
+a:focus-visible, button:focus-visible { outline: 3px solid var(--red); outline-offset: 2px; border-radius: 4px; }
+.skip { position: absolute; left: 16px; top: -60px; z-index: 10; background: #fff; color: var(--grey); padding: 10px 16px; border-radius: 6px; font-weight: 500; }
+.skip:focus { top: 12px; }
 a:hover { text-decoration: underline; }
 .wrap { max-width: 1080px; margin: 0 auto; padding: 0 16px; }
 @media (min-width: 720px) { .wrap { padding: 0 32px; } }
@@ -79,7 +96,7 @@ a:hover { text-decoration: underline; }
 .top { display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
 .top img { height: 30px; display: block; }
 .tag { font-size: 11px; letter-spacing: .2em; text-transform: uppercase; color: rgba(255,255,255,.75); border: 1px solid rgba(255,255,255,.3); padding: 6px 12px; border-radius: 6px; font-weight: 500; }
-.eyebrow { margin-top: 56px; display: flex; align-items: center; gap: 12px; color: var(--red); font-size: 13px; letter-spacing: .22em; text-transform: uppercase; font-weight: 500; }
+.eyebrow { margin-top: 56px; display: flex; align-items: center; gap: 12px; color: var(--red-on-dark); font-size: 13px; letter-spacing: .22em; text-transform: uppercase; font-weight: 500; }
 .eyebrow::before { content: ""; width: 32px; height: 2px; background: var(--red); }
 h1 { margin: 10px 0 0; font-size: clamp(34px, 6vw, 60px); line-height: 1.05; font-weight: 500; letter-spacing: -.01em; }
 h1 span { color: var(--red); }
@@ -90,21 +107,22 @@ h1 span { color: var(--red); }
 .meta div { font-size: 15px; }
 .cta { margin-top: 32px; display: flex; gap: 12px; flex-wrap: wrap; }
 .btn { display: inline-flex; align-items: center; gap: 8px; padding: 12px 20px; border-radius: 8px; font-weight: 500; font-size: 15px; }
-.btn.primary { background: var(--red); color: #fff; }
+.btn.primary { background: var(--red-button); color: #fff; }
 .btn.ghost { border: 1px solid rgba(255,255,255,.4); color: #fff; }
 .btn:hover { text-decoration: none; filter: brightness(1.06); }
 sup.cite { font-size: 10px; margin-left: 2px; }
-sup.cite a { color: var(--red); font-weight: 500; }
+sup.cite a { color: var(--red-text); font-weight: 500; }
+.hero sup.cite a { color: var(--red-on-dark); }
 section.block { padding: 56px 0 8px; }
 .label { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; }
-.label .no { color: var(--red); font-size: 13px; font-weight: 500; letter-spacing: .12em; }
+.label .no { color: var(--red-text); font-size: 13px; font-weight: 500; letter-spacing: .12em; }
 .label h2 { margin: 0; font-size: clamp(22px, 3vw, 28px); font-weight: 500; }
 .label .rule { flex: 1; height: 1px; background: var(--mist); }
 .intro { max-width: 760px; color: var(--muted); margin: -6px 0 24px; }
 .cards { display: grid; grid-template-columns: 1fr; gap: 16px; }
 @media (min-width: 800px) { .cards { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
 .dcard { border: 1px solid var(--silver); border-top: 4px solid var(--red); border-radius: 8px; padding: 20px; display: flex; flex-direction: column; gap: 10px; background: #fff; }
-.dcard .k { font-size: 12px; letter-spacing: .16em; text-transform: uppercase; color: var(--slate); font-weight: 500; }
+.dcard .k { font-size: 12px; letter-spacing: .16em; text-transform: uppercase; color: var(--slate-text); font-weight: 500; }
 .dcard h3 { margin: 0; font-size: 20px; font-weight: 500; }
 .dcard p { margin: 0; color: var(--muted); font-size: 15px; }
 .dcard .links { margin-top: auto; display: flex; gap: 14px; flex-wrap: wrap; font-weight: 500; font-size: 15px; }
@@ -117,7 +135,7 @@ section.block { padding: 56px 0 8px; }
 .post .av { width: 36px; height: 36px; flex: none; border-radius: 50%; background: var(--grey); display: grid; place-items: center; }
 .post .av img { width: 22px; }
 .post header span:nth-child(2) { display: flex; flex-direction: column; line-height: 1.3; min-width: 0; }
-.post header small { color: var(--slate); font-size: 12px; }
+.post header small { color: var(--slate-text); font-size: 12px; }
 .copy { margin-left: auto; font: 500 13px "Readex Pro", sans-serif; color: var(--grey); background: var(--tint); border: 1px solid var(--silver); border-radius: 6px; padding: 6px 12px; cursor: pointer; }
 .copy.done { background: var(--grey); color: #fff; border-color: var(--grey); }
 .post p { margin: 12px 0 0; white-space: pre-wrap; overflow-wrap: anywhere; font-size: 15px; color: #1f2d36; }
@@ -129,13 +147,13 @@ section.block { padding: 56px 0 8px; }
 @media (min-width: 800px) { .checks { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 .checks li { display: flex; gap: 12px; align-items: flex-start; padding: 12px 14px; border: 1px solid var(--mist); border-radius: 8px; }
 .checks b { flex: none; font-size: 11px; letter-spacing: .14em; text-transform: uppercase; padding: 3px 8px; border-radius: 4px; background: var(--grey); color: #fff; font-weight: 500; }
-.checks li.bad b { background: var(--red); }
+.checks li.bad b { background: var(--red-button); }
 .checks span { display: flex; flex-direction: column; font-size: 15px; min-width: 0; }
 .checks small { color: var(--muted); font-size: 13px; overflow-wrap: anywhere; }
 .refs { list-style: none; margin: 0; padding: 0; columns: 1; column-gap: 32px; }
 @media (min-width: 860px) { .refs { columns: 2; } }
 .refs li { break-inside: avoid; display: grid; grid-template-columns: 30px 1fr; gap: 4px; margin: 0 0 14px; font-size: 15px; }
-.refs .n { color: var(--red); font-weight: 500; }
+.refs .n { color: var(--red-text); font-weight: 500; }
 .refs a { color: var(--ink); font-weight: 500; overflow-wrap: anywhere; }
 .refs small { display: block; color: var(--muted); font-size: 13px; }
 footer.site { margin-top: 64px; background: var(--grey); color: rgba(255,255,255,.78); font-size: 14px; }
@@ -146,6 +164,7 @@ footer.site strong { color: #fff; font-weight: 500; }
 </style>
 </head>
 <body>
+<a class="skip" href="#main">Skip to content</a>
 <header class="hero">
   <img class="mark" src="assets/logos/redbelly-isotype-white.svg" alt="">
   <div class="wrap">
@@ -167,7 +186,7 @@ footer.site strong { color: #fff; font-weight: 500; }
   </div>
 </header>
 
-<main class="wrap">
+<main class="wrap" id="main">
   <section class="block" id="deliverables">
     <div class="label"><span class="no">01</span><h2>Deliverables</h2><span class="rule"></span></div>
     <div class="cards">
@@ -181,7 +200,7 @@ footer.site strong { color: #fff; font-weight: 500; }
         <p>Each source with the statements it supports and the verbatim passage behind them.</p>
         <div class="links"><a href="deliverables/03-source-list.pdf">PDF</a><a href="deliverables/03-source-list.md">Markdown</a></div></div>
     </div>
-    <a class="preview" href="deliverables/01-ceo-briefing.pdf"><img src="assets/briefing-preview.png" alt="The four pages of the briefing PDF" width="3440" height="1268" loading="lazy"></a>
+    <a class="preview" href="deliverables/01-ceo-briefing.pdf"><img src="assets/${PREVIEW}" alt="The four pages of the briefing PDF" width="1720" height="634" loading="lazy" decoding="async"></a>
   </section>
 
   <section class="block" id="thread">
@@ -238,7 +257,22 @@ mkdirSync(path.join(OUT, 'assets'), { recursive: true });
 cpSync(DELIVERABLES_DIR, path.join(OUT, 'deliverables'), { recursive: true });
 cpSync(path.join(SOURCE_DIR, 'assets', 'logos'), path.join(OUT, 'assets', 'logos'), { recursive: true });
 cpSync(path.join(SOURCE_DIR, 'assets', 'fonts'), path.join(OUT, 'assets', 'fonts'), { recursive: true });
-cpSync(path.join(ROOT, 'docs', 'briefing-preview.png'), path.join(OUT, 'assets', 'briefing-preview.png'));
+cpSync(path.join(ROOT, 'docs', PREVIEW), path.join(OUT, 'assets', PREVIEW));
 writeFileSync(path.join(OUT, 'index.html'), html);
+writeFileSync(path.join(OUT, '404.html'), notFoundHtml());
+writeFileSync(path.join(OUT, 'robots.txt'), `User-agent: *\nAllow: /\n`);
+
+function notFoundHtml() {
+  return `<!doctype html><html lang="en-AU"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Page not found</title><link rel="icon" href="/assets/logos/redbelly-isotype-red.svg" type="image/svg+xml"><meta name="robots" content="noindex">
+<style>@font-face{font-family:"Readex Pro";font-weight:400;src:url("/assets/fonts/readex-pro-latin-400-normal.woff2") format("woff2")}
+@font-face{font-family:"Readex Pro";font-weight:500;src:url("/assets/fonts/readex-pro-latin-500-normal.woff2") format("woff2")}
+*{box-sizing:border-box}body{margin:0;min-height:100vh;display:grid;place-items:center;padding:24px 16px;color:#fff;font:400 16px/1.6 "Readex Pro",system-ui,sans-serif;background:linear-gradient(135deg,#142530 0%,#283A46 78%);border-left:8px solid #FF5050}
+main{max-width:520px}img{height:28px}h1{margin:28px 0 8px;font-weight:500;font-size:32px}p{margin:0 0 24px;color:rgba(255,255,255,.82)}
+a.btn{display:inline-block;background:#D63031;color:#fff;padding:12px 20px;border-radius:8px;font-weight:500;text-decoration:none}a:focus-visible{outline:3px solid #FF5050;outline-offset:2px}</style></head>
+<body><main><img src="/assets/logos/redbelly-horizontal-negative.svg" alt="Redbelly"><h1>Page not found</h1>
+<p>This address does not exist. The briefing, the X thread and the source list are all on the main page.</p>
+<a class="btn" href="/">Go to the New CEO Briefing</a></main></body></html>`;
+}
 
 console.log(`Site assembled in ${path.relative(ROOT, OUT)}/ (${ordered.length} sources, ${thread.posts.length} posts, ${checks.length} checks).`);
